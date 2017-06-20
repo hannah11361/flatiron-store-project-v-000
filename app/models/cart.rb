@@ -4,9 +4,18 @@ class Cart < ActiveRecord::Base
   belongs_to :user
 
   def total
-    line_items.inject{ |sum, item| sum + item.total}
+    sum = 0
+    line_items.each { |l_item| sum += l_item.total}
+    sum
   end
 
-  def add_item
+  def add_item(id)
+    line_item = self.line_items.find_by(item_id: id)
+    if line_item.nil?
+      line_item = line_items.build(item_id: id, cart: self)
+    else
+      line_item.quantity += 1
+    end
+    line_item
   end
 end
